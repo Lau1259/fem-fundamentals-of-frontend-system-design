@@ -47,7 +47,24 @@
      * 4. Update fragment
      * 5. Append fragment to "list" container
      */
-    const observer = null;
+
+    let page = 0; // counter
+    //  I know there is only a single object we will observe and therefore only one intersection
+    const observer = new IntersectionObserver( async ([entry])=>{
+        if (entry.isIntersecting){
+            const data = await db.getPage(page++); // step 2: get data (await to mimic api)
+            const fragment = new DocumentFragment(); // step 3: create a fragment
+            // Iterate through page data and create cards as needed (simulate api response)
+            for (const datum of data) {
+                const card = createCardElement(datum.title, datum.body);
+                // Append to the fragment to essentially batch DOM updates in memory
+                fragment.appendChild(card);
+            }
+            list.appendChild(fragment); // Add to DOM once done creating cards.
+        }
+    });
+
+    observer.observe(observerElement);
 
 </script>
 </body>
